@@ -4,8 +4,8 @@
 		"iPhone",
 		"iPad"
 	],
-	"id": "H544A65EB",/*应用的标识，创建应用时自动生成，勿手动修改*/
-	"name": "graduation_design_app",/*应用名称，程序桌面图标名称*/
+	"id": "com.femirror.graduation",/*应用的标识，创建应用时自动生成，勿手动修改*/
+	"name": "安全防护系统",/*应用名称，程序桌面图标名称*/
 	"version": {
 		"name": "1.0.0",/*应用版本名称*/
 		"code": "83"
@@ -32,15 +32,18 @@
 			"description": "应用扩展事件"
 		},
 		"UI": {},
-		"Share": {},
+
 		"OAuth": {},
-		"Push": {},
+
 		"Maps": {},
 		"Speech": {},
-		"Payment": {},
+
 		"Contacts": {},
-		"Statistic": {},
-		"Messaging": {},"Webview":{},"NativeUI":{},"Navigator":{}
+
+		"Messaging": {},
+		"Webview": {},
+		"NativeUI": {},
+		"Navigator": {}
 	},
 	"plus": {
 		"splashscreen": {
@@ -50,6 +53,16 @@
 		"runmode": "liberate",/*应用的首次启动运行模式，可取liberate或normal，liberate模式在第一次启动时将解压应用资源（Android平台File API才可正常访问_www目录）*/
 		"signature": "Sk9JTiBVUyBtYWlsdG86aHIyMDEzQGRjbG91ZC5pbw==",/*可选，保留给应用签名，暂不使用*/
 		"distribute": {
+			"plugins": {
+				"maps": {
+					"baidu": {
+						"appkey_ios": "yLXDTwMinvgWFnGWhUxUHR5DMCuxnVVd",
+						"appkey_android": "5RBQnOF20TIN25fR8VoP4lsS7m8YXmbn",
+						"appkey": "",
+						"description": ""
+					}
+				}
+			},
 			"apple": {
 				"appid": "",/*iOS应用标识，苹果开发网站申请的appid，如io.dcloud.HelloH5*/
 				"mobileprovision": "",/*iOS应用打包配置文件*/
@@ -97,8 +110,7 @@
 				]
 			},
 			"orientation": [
-				"portrait-primary",
-				"portrait-secondary"
+				"portrait-primary"
 			],/*应用支持的方向，portrait-primary：竖屏正方向；portrait-secondary：竖屏反方向；landscape-primary：横屏正方向；landscape-secondary：横屏反方向*/
 			"icons": {
 				"ios": {
@@ -162,7 +174,8 @@
 					"xhdpi": "", /*720P高分屏启动图片，分辨率：720x1242*/
 					"xxhdpi": ""
 				}
-			}
+			},
+			"debug": true
 		}
 	},
 	"dependencies": {
@@ -196,10 +209,12 @@
 					"css/mui.min.css",
 					"fonts/mui.ttf",
 					"js/mui.min.js",
-					"js/app.js"
+					"js/app.js",
+					"login.html"
 				],
 				"refer": [
-					"setting.html"
+					"setting.html",
+					"login.1.html"
 				],
 				"priority": 1
 			},

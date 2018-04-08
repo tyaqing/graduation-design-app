@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>安全防护系统</title>
+	<link href="css/mui.min.css" rel="stylesheet" />
+
+	<style>
+		ul {
+			font-size: 14px;
+			color: #8f8f94;
+		}
+
+		.mui-btn {
+			padding: 10px;
+		}
+
+		#map {
+			width: 100%;
+			position: fixed;
+			top: 45px;
+			bottom: 0px;
+			line-height: 200px;
+			text-align: center;
+			background: #FFFFFF;
+		}
+	</style>
+</head>
+
+<body>
+	<header class="mui-bar mui-bar-nav" style="">
+		<h1 onclick="getCurrentCenter()" class="mui-title">安全防护系统</h1>
+		<button id='setting' class=" mui-pull-right mui-btn-link">设置</button>
+	</header>
+	<div class="mui-content">
+		<div class="mui-content-padded">
+		</div>
+	</div>
+	<div id="map">地图加载中...</div>
+	<script src="js/mui.min.js"></script>
+	<script src="js/app.js"></script>
+	<script src="js/jquery.js"></script>
+	<script src="js/init.js"></script>
+	<script> 
+		var ws = null, wo = null;
+		var em = null, map = null, pcenter = null;
+		var currentLocation = null;
+		// H5 plus事件处理
+		function plusReady() {
+			if (!em || ws) { return };
+			// 获取窗口对象
+			ws = plus.webview.currentWebview();
+			wo = ws.opener();
+			//高德地图坐标为(116.3974357341,39.9085574220), 百度地图坐标为(116.3975,39.9074)
+			pcenter = new plus.maps.Point(112.689997, 26.889923);
+			setTimeout(function () {
+				map = new plus.maps.Map("map");
+				map.centerAndZoom(pcenter, 12);
+
+				// 显示当前用户位置
+				map.showUserLocation(true);
+
+
+				createMarker();
+
+				// createCircle();
+
+				// 创建子窗口
+				createSubview();
+				// 创建线路,失败
+				createRoute();
+				// 创建搜索 
+				// createSearch();
+				uploadLocation();
+			}, 300);
+			// 显示页面并关闭等待框
+			ws.show("pop-in");
+		}
+		if (window.plus) {
+			plusReady();
+		} else {
+			document.addEventListener("plusready", plusReady, false);
+		}
+		// DOMContentloaded事件处理
+		document.addEventListener("DOMContentLoaded", function () {
+			em = document.getElementById("map");
+			window.plus && plusReady();
+		}, false);
+		function userLocation() {
+			map.showUserLocation(true);
+			map.getUserLocation(function (state, pos) {
+				currentLocation = pos;
+				if (0 == state) {
+					map.setCenter(pos);
+				}
+			});
+		}
+
+
+		// 上传用户位置
+		function uploadLocation() {
+			setInterval(function () {
+				$.ajax({
+					url: GLOBAL_URL + '/location',
+					data: {
+						currentLocation
+					},
+					success: function () {
+						console.log('chengg')
+					},
+				})
+			}, 5000);
+		}
+		// 创建marker
+		function createMarker() {
+			//高德地图坐标为(116.3406445236,39.9630878208), 百度地图坐标为(116.347292,39.968716
+			var marker = new plus.maps.Marker(new plus.maps.Point(112.689997, 26.889923));
+
+			marker.setIcon("/images/weixin.png");
+			marker.setLabel("第一个位置");
+			var bubble = new plus.maps.Bubble("第一个位置");
+			marker.setBubble(bubble);
+			map.addOverlay(marker);
+
+			var marker2 = new plus.maps.Marker(new plus.maps.Point(112.689997, 26.789923));
+			marker2.setIcon("/images/weixin.png");
+			marker2.setLabel("HBuilder");
+			var bubble = new plus.maps.Bubble("打造最好的HTML5移动开发工具");
+			marker2.setBubble(bubble);
+			map.addOverlay(marker2);
+		}
+		function createSearch() {
+			var searchObj = new plus.maps.Search(map);
+			searchObj.onPoiSearchComplete = function (state, result) {
+				console.log(JSON.stringify(result));
+				console.log("onPoiSearchComplete: " + state + " , " + result.currentNumber);
+				if (state == 0) {
+					if (result.currentNumber <= 0) {
+						alert("没有检索到结果");
+					}
+					for (var i = 0; i < result.currentNumber; i++) {
+						var pos = result.getPosition(i);
+						var marker = new plus.maps.Marker(pos.point);
+						marker.setLabel(pos.name);
+						map.addOverlay(marker);
+					}
+				} else {
+					alert("检索失败");
+				}
+			}
+			console.log('currentLocation', currentLocation);
+			var pt = new plus.maps.Point(112.689997, 26.889923); // 天安门坐标
+			searchObj.poiSearchNearBy("肯德基", pt, 1000);
+
+		}
+		// 创建线路
+		function createRoute() {
+			// 创建路线
+			var point1 = new plus.maps.Point(119.123456, 31.123456);
+			var point2 = new plus.maps.Point(119.223456, 31.223456);
+			var aaa = new plus.maps.Route(point1, point2);
+			console.log(aaa.startPoint + '|' + aaa.endPoint + '|' + aaa.pointCount + '|' + aaa.pointList + '|' + aaa.distance + '|' + aaa.routeTip);
+			map.addOverlay(aaa);
+		}
+		// 创建圆形
+		function createCircle() {
+
+			var circleObj = new plus.maps.Circle(new plus.maps.Point(112.689997, 26.889923), 5000);
+			map.addOverlay(circleObj);
+		}
+		function getCurrentCenter() {
+			map.getCurrentCenter(function (state, point) {
+				if (0 == state) {
+					alert(JSON.stringify(point));
+				} else {
+					alert("Failed!");
+				}
+			});
+		}
+		function getCurrentBounds() {
+			// console.log('getCurrentBounds');
+			alert(JSON.stringify(map.getBounds()));
+		}
+
+
+		function createSubview() {
+			// 创建加载内容窗口
+			var topoffset = '94px';
+			if (plus.navigator.isImmersedStatusbar()) {// 兼容immersed状态栏模式
+				topoffset = (Math.round(plus.navigator.getStatusbarHeight()) + 44) + 'px';
+			}
+			var wsub = plus.webview.create('login.1.html', 'sub', { top: topoffset, height: '60px', position: 'absolute', scrollIndicator: 'none', background: 'transparent' });
+			ws.append(wsub);
+		}
+
+		(function ($, doc) {
+			$.init();
+			var settings = app.getSettings();
+			var account = doc.getElementById('account');
+			//
+			window.addEventListener('show', function () {
+				var state = app.getState();
+				account.innerText = state.account;
+			}, false);
+			$.plusReady(function () {
+				var settingPage = $.preload({
+					"id": 'setting',
+					"url": 'login.html'
+				});
+				//设置
+				var settingButton = doc.getElementById('setting');
+				//settingButton.style.display = settings.autoLogin ? 'block' : 'none';
+				settingButton.addEventListener('tap', function (event) {
+					$.openWindow({
+						id: 'setting',
+						show: {
+							aniShow: 'pop-in'
+						},
+						styles: {
+							popGesture: 'hide'
+						},
+						waiting: {
+							autoShow: false
+						}
+					});
+				});
+				//--
+				$.oldBack = mui.back;
+				var backButtonPress = 0;
+				$.back = function (event) {
+					backButtonPress++;
+					if (backButtonPress > 1) {
+						plus.runtime.quit();
+					} else {
+						plus.nativeUI.toast('再按一次退出应用');
+					}
+					setTimeout(function () {
+						backButtonPress = 0;
+					}, 1000);
+					return false;
+				};
+			});
+		}(mui, document));
+	</script>
+</body>
+
+</html>

@@ -172,6 +172,7 @@
 							}
 						});
 					} else if (settings.autoLogin && state.token) {
+						console.log('走的是这里?');
 						toMain();
 					} else {
 						app.setState(null);
@@ -207,6 +208,7 @@
 										plus.nativeUI.toast("获取用户信息成功");
 										var name = auth.userInfo.nickname || auth.userInfo.name;
 										app.createState(name, function() {
+											console.log('createState走的是这里?');
 											toMain();
 										});
 									}, function(e) {
@@ -244,6 +246,7 @@
 								plus.nativeUI.toast(err);
 								return;
 							}
+							console.log('cccc');
 							toMain();
 						});
 					});
