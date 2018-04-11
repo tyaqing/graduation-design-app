@@ -17,11 +17,13 @@ $.ajaxSetup({
       let data = JSON.parse(jqXHR.responseText);
       mui.toast(data.msg);
     }
-    // console.log(jqXHR.responseJson);
+    console.log(jqXHR.status);
     if (jqXHR.status == "401") {
-      setTimeout(function() {
-        location.href = "../login.html";
-      }, 600);
+      console.log("这里要做跳转");
+      openWebview({ url: "login.html" });
+      // setTimeout(function() {
+      //   location.href = "../login.html";
+      // }, 600);
     } else {
       console.log("errorMsg", JSON.stringify(JSON.stringify(jqXHR)));
     }
@@ -43,7 +45,8 @@ $.ajaxSetup({
 // 打开新的窗口
 function openWebview(obj) {
   console.log("打开新的Webview", JSON.stringify(obj));
-  mui.openWindow({
+  if (typeof obj !== "object") return console.error("参数必须为一个对象");
+  var config = {
     url: obj.url,
     id: obj.url,
     styles: {
@@ -83,7 +86,12 @@ function openWebview(obj) {
         height: "150px" //等待框背景区域高度，默认根据内容自动计算合适高度
       }
     }
-  });
+  };
+  if (obj.noTitle) {
+    config.styles.titleNView = false;
+  }
+  // obj.noTitle && config.styles.titleNView = false;
+  mui.openWindow(config);
 }
 /**
  * 清理webview
