@@ -431,57 +431,9 @@
 				}
 			});
 		}, false);
-		 //************************
-		 //锁屏设置
-		(function($, doc) {
-			//$.init();
-			$.plusReady(function() {
-				var settings = app.getSettings();
-				var lockStateButton = doc.getElementById("lockState");
-				var locker = doc.querySelector('.mui-locker');
-				lockStateButton.classList[settings.gestures ? 'add' : 'remove']('mui-active')
-				locker.style.display = settings.gestures ? 'block' : 'none';
-				lockStateButton.addEventListener('toggle', function(event) {
-					var isActive = event.detail.isActive;
-					locker.style.display = isActive ? 'block' : 'none';
-					if (!isActive) {
-						//						alert(0);
-						settings.gestures = '';
-						app.setSettings(settings);
-					}
-				}, false);
-				var record = [];
-				locker.addEventListener('done', function(event) {
-					var rs = event.detail;
-					if (rs.points.length < 4) {
-						plus.nativeUI.toast('设定的手势太简单了');
-						record = [];
-						rs.sender.clear();
-						return;
-					}
-					record.push(rs.points.join(''));
-					if (record.length >= 2) {
-						if (record[0] == record[1]) {
-							plus.nativeUI.toast('解锁手势设定成功，以后用户只需使用手势解锁而无需输入密码登录。');
-							settings.gestures = record[0];
-							settings.autoLogin = true;
-							app.setSettings(settings);
-							setTimeout(function() {
-								$.back();
-							}, 200);
-						} else {
-							plus.nativeUI.toast('两次手势不一致,请重新设定');
-						}
-						rs.sender.clear();
-						record = [];
-					} else {
-						plus.nativeUI.toast('请确认手势设定');
-						rs.sender.clear();
-					}
-				}, false);
-			});
-		}(mui, document));
+		
 		 //********************
+		 
 		var view = viewApi.view;
 		(function($) {
 			//处理view的后退与webview后退
@@ -497,20 +449,6 @@
 			//第一个参数为事件名称，第二个参数为事件回调，其中e.detail.page为当前页面的html对象
 			view.addEventListener('pageBeforeShow', function(e) {
 				//				console.log(e.detail.page.id + ' beforeShow');
-			});
-			view.addEventListener('pageShow', function(e) {
-				//进入手执设定界面时
-				if (e.detail.page.id == 'lock') {
-					var settings = app.getSettings();
-					/*if (!settings.autoLogin) {
-						plus.nativeUI.toast('当前没有启用 “自动登录”，需要在登录时启用 "自动登录"，设定的手势锁屏才会升效。');
-					}*/
-					var lockStateButton = document.getElementById("lockState");
-					var locker = document.querySelector('.mui-locker');
-					lockStateButton.classList[settings.gestures ? 'add' : 'remove']('mui-active')
-					locker.style.display = settings.gestures ? 'block' : 'none';
-				}
-				//				console.log(e.detail.page.id + ' show');
 			});
 			view.addEventListener('pageBeforeBack', function(e) {
 				//				console.log(e.detail.page.id + ' beforeBack');

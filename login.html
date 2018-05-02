@@ -199,13 +199,15 @@
 							account: accountBox.value,
 							password: passwordBox.value
 						};
+						
+						toMain();
 						app.login(loginInfo, function(err) {
 							if (err) {
 								plus.nativeUI.toast(err);
 								return;
 							}
 							console.log('cccc');
-							toMain();
+							
 						});
 					});
 					$.enterfocus('#login-form input', function() {
