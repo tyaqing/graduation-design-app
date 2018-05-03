@@ -6,9 +6,9 @@
 	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<meta name="HandheldFriendly" content="true" />
 	<meta name="MobileOptimized" content="320" />
-	
+	  <script src="html5plus://ready"></script>
 	<title>安全防护系统 subview</title>
-	<!-- <link href="css/mui.min.css" rel="stylesheet" /> -->
+	 <link href="css/mui.min.css" rel="stylesheet" /> 
 	<!-- <link href="css/style.css" rel="stylesheet" /> -->
 
 	<link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
@@ -16,13 +16,37 @@
 		html,
 		body {
 			overflow: hidden;
+			background-color: transparent;
+		}
+		.mui-content{
+			background-color: transparent;
 		}
 	</style>
 </head>
 <body>
-	<div class="button" style="margin:.2em auto;width:50%" onclick="resetMap()">重　置</div>
+	<div class="mui-content">
+			<button @click="sos" style="float: right;margin: 0 5px;" type="button" class="mui-btn mui-btn-danger">一键SOS</button>
+
+		<button @click="userLocation" style="float: right;margin: 0 5px;" type="button" class="mui-btn mui-btn-blue">当前位置</button>
+
+	
+	</div>
+	<!--<div class="button" style="margin:.2em auto;width:50%" onclick="resetMap()">重　置</div>-->
 </body>
+<script type="text/javascript" src="js/vue.js" ></script>
+<script type="text/javascript" src="js/fastclick.js" ></script>
 <script type="text/javascript">
+	new Vue({
+		el:'.mui-content',
+		methods:{
+			sos(){
+				plus.nativeUI.toast('哈哈')
+			},
+			userLocation(){
+				plus.webview.currentWebview().opener().evalJS('userLocation()');
+			}
+		}
+	})
 	function resetMap() {
 		plus.webview.currentWebview().opener().evalJS('resetMap()');
 	}
