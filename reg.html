@@ -96,10 +96,10 @@
 				el: '.mui-content',
 				data: {
 					form: {
-						username: 'ARH',
+						username: '', //ARH
 						sex: 1,
-						tel: '13203101492',
-						tel_sos: '13203101492',
+						tel: '', //18143383909
+						tel_sos: '', //13203101492
 						birthday: '',
 						vehicle: '电动车',
 						medical_history: '无病史',
@@ -136,7 +136,7 @@
 							plus.nativeUI.toast('注册成功');
 							
 							app.log(loginedUser)
-							mui.back();
+							plus.runtime.restart();
 					
 							// 注册成功，跳转到商品 list 页面
 						}, (function(error) {

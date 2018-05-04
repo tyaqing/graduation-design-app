@@ -5,7 +5,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<title></title>
-		  <script src="html5plus://ready"></script>
+		<script src="html5plus://ready"></script>
 		<link href="css/mui.min.css" rel="stylesheet" />
 		<link href="css/style.css" rel="stylesheet" />
 		<style>
@@ -105,124 +105,141 @@
 					<input v-model="form.yzm" type="number" class="mui-input-clear mui-input" placeholder="请输入验证码">
 				</div>
 			</form>
-	
+
 			<div class="mui-content-padded">
 				<button @click="login" class="mui-btn mui-btn-block mui-btn-primary">登录</button>
 				<div class="link-area">
-					<a @click="app.openWebview({url:'reg.html',title:'注册'})" id='reg'>注册账号</a> 
+					<a @click="app.openWebview({url:'reg.html',title:'注册'})" id='reg'>注册账号</a>
 				</div>
 			</div>
-			<div style="color: #999;"  class="mui-content-padded oauth-area">
-				基于GPS骑手安全防护系统
+			<div style="color: #999;font-size: 15px;" class="mui-content-padded oauth-area">
+				基于手机GPS定位的骑手安全防护系统
 			</div>
-		</div> 
+		</div>
 		<script src="js/mui.min.js"></script>
 		<script src="js/mui.enterfocus.js"></script>
 		<script src="js/app.js"></script>
-			<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
-		<script type="text/javascript" src="js/fastclick.js" ></script>
+		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript" src="js/fastclick.js"></script>
 		<!-- <script src="js/jquery.js"></script> -->
 		<!-- <script src="js/init.js"></script> -->
 		<script src="https://cdn1.lncld.net/static/js/3.6.8/av-min.js"></script>
 
 		<script>
 			console.log(321)
-			
+
 			// 判断登陆直接进入
-			
-			
-			
+
 			var vm = new Vue({
 				el: '.mui-content',
 				data: {
-					form:{
-						yzm:'',
-						tel:'17749663190', // 17749663190
-					
-					} ,
-						smsTip:'发送验证码',
-						smsExpire:60,
-				},
-				methods:{
-					sendSms(){  
-					
-						if(this.smsExpire<60) plus.nativeUI.toast('请稍后操作');
-						
-						var _that = this;
-						var interval =  setInterval(function(){
-//							console.log(321)
-							_that.smsTip = _that.smsExpire + '秒';
-							_that.smsExpire --;
-							if(_that.smsExpire==0){
-								 clearInterval(interval);
-								 _that.smsExpire =60;
-								 _that.smsTip = '发送验证码';
-							}
-						},1000)
-						
-//						AV.User.requestLoginSmsCode(this.form.tel).then(res=>{
-//							app.log(res)
-//						}).catch(err=>{
-//							app.log(err)
-//						})
-						
-//						return;
-//						plus.nativeUI.toast(this.form.tel)
-//						return;
-						AV.Cloud.requestSmsCode({
-							 mobilePhoneNumber: this.form.tel,
-							 name: '骑手端',
-							 op: '登陆', 
-							 ttl: 30                     // 验证码有效时间为 10 分钟
-							}).then(function(){
-									plus.nativeUI.toast('验证码已发送')
-							 //调用成功
-							}, function(err){
-								plus.nativeUI.toast(err.rawMessage)
-								app.log(err)
-							 //调用失败
-							});
-						return;
-						
-						AV.User.requestLoginSmsCode(this.form.tel).then(res=>{
-							console.log('登陆成功过')
-							app.log(res)
-						}).catch(err=>{
-							app.log(err)
-						})
+					form: {
+						yzm: '',
+						tel: '', // 17749663190    zj:13117343518  ly:18143383909
+
 					},
-					login(){
-							// https://leancloud.cn/docs/leanstorage_guide-js.html#用户名和密码登录
-							
-//						AV.User.logInWithMobilePhone(this.form.tel)
-//						app.openWebview({url:'main.1.html',title:'安全防护系统'});
-//						return;
-					AV.Cloud.verifySmsCode(this.form.yzm,this.form.tel).then(res=>{
-						return AV.User.logInWithMobilePhone(this.form.tel,this.form.tel);
-					}).then(loginedUser=>{
-						app.log(loginedUser)
-						app.openWebview({url:'main.1.html',title:'安全防护系统'});
-					}).catch(err=>{
-						app.log(err)
-						plus.nativeUI.toast(err.rawMessage)
-					})
+					smsTip: '发送验证码',
+					smsExpire: 0,
+				},
+				methods: {
+					sendSms() {
+
+						if(this.form.tel.length != 11) {
+							plus.nativeUI.toast('请输入正确的手机号码')
+							return;
+						}
+
+						if(this.smsExpire > 0) {
+							plus.nativeUI.toast('请稍后操作');
+							return;
+						}
+						var _that = this;
+						// 查看是否有账号
+						var query = new AV.Query('User');
+						query.equalTo('mobilePhoneNumber', this.form.tel);
+
+						query.find().then(function(results) {
+							app.log(results)
 					
-					return;
-							 
+							if(results.length) {
+
+								_that.smsExpire = 60;
+								var interval = setInterval(function() {
+									//							console.log(321)
+									_that.smsTip = _that.smsExpire + '秒';
+									_that.smsExpire--;
+									if(_that.smsExpire == 0) {
+										clearInterval(interval);
+										_that.smsExpire = 0;
+										_that.smsTip = '发送验证码';
+									}
+								}, 1000)
+								return AV.Cloud.requestSmsCode({
+									mobilePhoneNumber: _that.form.tel,
+									name: '骑手端',
+									op: '登陆',
+									ttl: 30 // 验证码有效时间为 10 分钟
+								});
+							} else {
+								plus.nativeUI.toast('用户不存在,请先注册使用');
+								throw '用户不存在';
+							}
+							// results is an array of AV.Object.
+
+						}).then(function() {
+							plus.nativeUI.toast('验证码已发送')
+							//调用成功
+						}).catch(function(error) {
+							console.error('error')
+							app.log(error)
+							plus.nativeUI.toast(error.rawMessage);
+
+							// error is an instance of AVError.
+						});
+
+					},
+					login() {
+						console.log(this.form.tel.length)
+						if(this.form.tel.length != 11) {
+							plus.nativeUI.toast('请输入正确的手机号码');
+							return;
+						}
+						if(this.form.yzm.length != 6) {
+							plus.nativeUI.toast('请输入正确的验证码');
+							return;
+						}
+
+						// https://leancloud.cn/docs/leanstorage_guide-js.html#用户名和密码登录
+
+						//						AV.User.logInWithMobilePhone(this.form.tel)
+						//						app.openWebview({url:'main.1.html',title:'安全防护系统'});
+						//						return;
+						AV.Cloud.verifySmsCode(this.form.yzm, this.form.tel).then(res => {
+							return AV.User.logInWithMobilePhone(this.form.tel, this.form.tel);
+						}).then(loginedUser => {
+							app.log(loginedUser)
+							app.openWebview({
+								url: 'main.1.html',
+								title: '安全防护系统'
+							});
+						}).catch(err => {
+							app.log(err)
+							plus.nativeUI.toast(err.rawMessage)
+						})
+
+						return;
+
 						AV.User.logInWithMobilePhoneSmsCode(this.form.tel, this.form.yzm).then(function(loginedUser) {
 							// 登录成功，跳转到商品 list 页面
 							app.log(loginedUser)
 						}, function(error) {
 							app.log(error)
 							plus.nativeUI.toast(error.rawMessage);
-							
-							
+
 						});
 					}
 				}
 			});
-
-			
 
 			//			toMain();
 			var APP_ID = 'kayVQCY67t8DAiIcBXSlWIQV-gzGzoHsz';
@@ -232,18 +249,20 @@
 				appId: APP_ID,
 				appKey: APP_KEY
 			});
-			
-			app.log(AV.User.current()) 
-			
-			if(AV.User.current()){
-				app.openWebview({url:'main.1.html',title:'安全防护系统'});
+
+			app.log(AV.User.current())
+
+			if(AV.User.current()) {
+				app.openWebview({
+					url: 'main.1.html',
+					title: '安全防护系统'
+				});
 			}
 
 			var username = "admin";
 			var password = "pass";
 
 			// LeanCloud - 登录
-		
 		</script>
 	</body>
 

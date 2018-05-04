@@ -55,7 +55,13 @@
 				},
 				created:function(){
 					this.user = AV.User.current();
+				},
+				methods:{
+					logout(){
+						 AV.User.logOut();
+					}
 				}
+	
 			})
 //			app.log( AV.User.current('username'))
  		
@@ -69,6 +75,27 @@
 				map = null,
 				pcenter = null;
 			var currentLocation = null;
+
+			function logout(){
+				 AV.User.logOut();
+				 var ws=plus.webview.currentWebview();
+				plus.webview.close(ws);
+			}
+			
+			function sos(){
+				  var Sos = AV.Object.extend('SOS');
+				  var sosItem = new Sos();
+				  sosItem.set('user',vm.user);
+				  sosItem.set('location',currentLocation);
+				  sosItem.save().then(res=>{
+				  	plus.nativeUI.alert('SOS信息已发出')
+				  	app.log(res)
+				  }).catch(err=>{
+				  	app.log(err)
+				  })
+//				  app.log(Todo)
+
+			}
 
 			function userLocation() {
 				map.showUserLocation(true);
@@ -129,7 +156,7 @@
 					if(0 == state) {
 						map.setCenter(pos);
 					}
-				});
+				}); 
 			}
 
 			// 上传用户位置
@@ -242,6 +269,17 @@
 				});
 				ws.append(wsub);
 			}
+			
+			mui.back = function (event) {
+					plus.nativeUI.confirm('确认退出登陆么',function(e){
+						if(e.index==0){
+							plus.nativeUI.toast('已退出');
+							logout();
+						}
+						app.log(e)
+					})
+			
+				};
 
 		 
 		</script>
