@@ -88,7 +88,7 @@
 				  sosItem.set('user',vm.user);
 				  sosItem.set('location',currentLocation);
 				  sosItem.save().then(res=>{
-				  	plus.nativeUI.alert('SOS信息已发出')
+				  	plus.nativeUI.alert('SOS信息已发出，管理人员将紧急为您处理')
 				  	app.log(res)
 				  }).catch(err=>{
 				  	app.log(err)
@@ -185,8 +185,8 @@
 						console.log('upload success')
 						app.log(res)
 					}).catch(err=>{
-						console.error('upload error')
-						app.log(err.response)
+//						console.error('upload error')
+//						app.log(err.response)
 					})
 				}, 5000); 
 			}

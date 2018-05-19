@@ -118,7 +118,8 @@
 							}
 						}
 						if(vali) return plus.nativeUI.toast(vali+'不能为空');
-						
+						//判断联系人和紧急联系人不同
+						if(this.form.tel==this.form.tel_sos)return plus.nativeUI.toast('紧急联系人和本人联系方式不能相同');
 						// Mogo
 //						$.ajax{}
 
